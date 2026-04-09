@@ -3,7 +3,8 @@ from pathlib import Path
 
 VENUES_PATH = Path("data/raw/venues.json")
 CLIMATES_PATH = Path("data/raw/team_climates.json")
-PENALTY_THRESHOLD = 15
+COLD_SHOCK_THRESHOLD = 8
+WARM_SHOCK_THRESHOLD = 8
 PENALTY_PER_DEGREE = 0.012
 
 def load_data():
@@ -26,10 +27,10 @@ def climate_penalty(team: str, venue_city: str) -> dict:
     shock_type = None
     penalty = 0.0
 
-    if delta < -PENALTY_THRESHOLD:
+    if delta < -COLD_SHOCK_THRESHOLD:
         shock_type = "cold_shock"
         penalty = abs(delta) * PENALTY_PER_DEGREE
-    elif delta > 10:
+    elif delta > WARM_SHOCK_THRESHOLD:
         shock_type = "warm_shock"
         penalty = delta * (PENALTY_PER_DEGREE / 2)
 
@@ -41,7 +42,7 @@ def climate_penalty(team: str, venue_city: str) -> dict:
         "delta": round(delta, 1),
         "shock_type": shock_type,
         "win_rate_penalty": round(penalty, 3),
-        "insight": f"{team} faces a {abs(delta)}°C {shock_type or 'neutral'} in {venue_city}"
+        "insight": f"{team} faces a {abs(round(delta))}°C {'drop' if delta < 0 else 'rise'} in {venue_city} — {shock_type or 'no significant shock'}"
     }
 
 def top_climate_mismatches(teams: list, venue_city: str) -> list:
