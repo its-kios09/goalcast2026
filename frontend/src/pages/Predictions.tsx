@@ -33,7 +33,7 @@ export default function Predictions() {
   const [away, setAway] = useState('France')
 
   const { data: top } = useQuery({ queryKey: ['top'], queryFn: getTopTeams })
-  const { data: match, refetch } = useQuery({
+  const { data: match } = useQuery({
     queryKey: ['match', home, away],
     queryFn: () => predictMatch(home, away),
     enabled: true
